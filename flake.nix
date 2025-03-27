@@ -11,26 +11,43 @@
 
   outputs = { self, nixpkgs, aider-src }:
     let
-      system = "aarch64-darwin"; 
-      pkgs = nixpkgs.legacyPackages.${system};
+      supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in {
-      packages.${system}.default = pkgs.python3Packages.buildPythonApplication {
-        pname = "aider";
-        version = "0.79.0";
-        src = aider-src;
+      packages = forAllSystems (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in {
+          default = pkgs.python3Packages.buildPythonApplication {
+            pname = "aider";
+            version = "0.79.0";
+            src = aider-src;
 
-        propagatedBuildInputs = with pkgs.python3Packages; [
-          setuptools
-          wheel
-        ];
+            format = "pyproject";
 
-        doCheck = false;
+            nativeBuildInputs = with pkgs.python3Packages; [
+              setuptools
+              wheel
+            ];
 
-        meta = with pkgs.lib; {
-          description = "AI-powered coding assistant";
-          homepage = "https://github.com/Aider-AI/aider";
-          license = licenses.mit;
-        };
-      };
+            propagatedBuildInputs = with pkgs.python3Packages; [
+              setuptools
+              wheel
+            ];
+
+            doCheck = false;
+
+            # Explicitly setting phases to standard Python build phases
+            phases = [ "unpackPhase" "buildPhase" "installPhase" ];
+
+            meta = with pkgs.lib; {
+              description = "AI-powered coding assistant";
+              homepage = "https://github.com/Aider-AI/aider";
+              license = licenses.mit;
+            };
+          };
+        }
+      );
     };
 }
+
+
