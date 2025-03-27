@@ -33,11 +33,18 @@
             ];
 
             # Runtime dependencies - Nix usually auto-detects these from the wheel.
-            # Keep empty unless auto-detection fails for some dependency.
             propagatedBuildInputs = with pkgs.python3Packages; [
-              # Example: if 'requests' was needed at runtime and not detected:
-              # requests
+              # Keep empty unless auto-detection fails for some dependency.
             ];
+
+            # --- > Key Change Here < ---
+            # Set the environment variable directly as a derivation attribute.
+            # This makes it available throughout the entire build process,
+            # including early PEP 517 steps like get_requires_for_build_wheel.
+            # Use the *normalized* distribution name (aider-chat -> aider_chat).
+            SETUPTOOLS_SCM_PRETEND_VERSION_FOR_aider_chat = version;
+            # --- > End Key Change < ---
+
 
             # Tests often require extra dependencies or setup, disabled for simplicity
             doCheck = false;
@@ -45,9 +52,8 @@
             buildPhase = ''
               runHook preBuild
 
-              # Tell setuptools-scm the version since we don't have .git metadata
-              # Use the *normalized* distribution name (aider-chat -> aider_chat)
-              export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_aider_chat=${version}
+              # The environment variable is now set globally for the build,
+              # no need to export it here again.
 
               # Build the wheel using the 'build' package
               # --no-isolation uses the environment Nix set up, which is correct here
@@ -66,11 +72,11 @@
             '';
 
             meta = with pkgs.lib; {
-              description = "AI pair programming in your terminal"; # Updated description from repo
+              description = "AI pair programming in your terminal";
               homepage = "https://github.com/Aider-AI/aider";
-              license = licenses.asl20; # License is Apache-2.0 according to repo/PyPI
-              maintainers = with maintainers; [ /* Your GitHub username */ ]; # Optional: add yourself
-              platforms = platforms.unix; # Runs on linux and darwin
+              license = licenses.asl20; # License is Apache-2.0
+              maintainers = with maintainers; [ /* Your GitHub username */ ];
+              platforms = platforms.unix;
             };
           };
         }
