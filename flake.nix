@@ -1,10 +1,10 @@
 {
-  description = "Aider v0.79.0 packaged from git directly";
+  description = "Aider v0.79.0 packaged directly from Git, bypassing setuptools-scm issues";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     aider-src = {
-      url = "git+https://github.com/Aider-AI/aider.git?ref=v0.79.0";
+      url = "github:Aider-AI/aider/v0.79.0";
       flake = false;
     };
   };
@@ -22,22 +22,33 @@
             version = "0.79.0";
             src = aider-src;
 
-            format = "pyproject";
-
             nativeBuildInputs = with pkgs.python3Packages; [
               setuptools
               wheel
-              setuptools-scm
               build
             ];
 
             propagatedBuildInputs = with pkgs.python3Packages; [
               setuptools
               wheel
+              openai
+              tiktoken
+              rich
+              requests
+              gitpython
+              pyyaml
+              jsonschema
               setuptools-scm
             ];
 
             doCheck = false;
+
+            format = "pyproject";
+
+            # Explicitly override setuptools-scm by setting version manually
+            preBuild = ''
+              export SETUPTOOLS_SCM_PRETEND_VERSION=0.79.0
+            '';
 
             buildPhase = ''
               python -m build --wheel --no-isolation
