@@ -39,11 +39,8 @@
 
             doCheck = false;
 
-            # This line explicitly tells setuptools-scm the version
-            SETUPTOOLS_SCM_PRETEND_VERSION = "0.79.0";
-
             buildPhase = ''
-              export SETUPTOOLS_SCM_PRETEND_VERSION=${version}
+              export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_AIDER_CHAT=${version}
               python -m build --wheel --no-isolation
             '';
 
@@ -60,4 +57,4 @@
         }
       );
     };
-}=
+}
