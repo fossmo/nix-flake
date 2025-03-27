@@ -27,6 +27,8 @@
             nativeBuildInputs = with pkgs.python3Packages; [
               setuptools
               wheel
+              setuptools-scm
+              build
             ];
 
             propagatedBuildInputs = with pkgs.python3Packages; [
@@ -37,8 +39,13 @@
 
             doCheck = false;
 
-            # Explicitly setting phases to standard Python build phases
-            phases = [ "unpackPhase" "buildPhase" "installPhase" ];
+            buildPhase = ''
+              python -m build --wheel --no-isolation
+            '';
+
+            installPhase = ''
+              pip install dist/*.whl --prefix=$out
+            '';
 
             meta = with pkgs.lib; {
               description = "AI-powered coding assistant";
@@ -50,5 +57,3 @@
       );
     };
 }
-
-
