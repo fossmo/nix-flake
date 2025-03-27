@@ -1,5 +1,5 @@
 {
-  description = "Aider v0.79.0 packaged from GitHub";
+  description = "Aider v0.79.0 packaged from GitHub without git metadata";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -39,7 +39,11 @@
 
             doCheck = false;
 
+            # This line explicitly tells setuptools-scm the version
+            SETUPTOOLS_SCM_PRETEND_VERSION = "0.79.0";
+
             buildPhase = ''
+              export SETUPTOOLS_SCM_PRETEND_VERSION=${version}
               python -m build --wheel --no-isolation
             '';
 
@@ -56,4 +60,4 @@
         }
       );
     };
-}
+}=
