@@ -32,6 +32,7 @@
             propagatedBuildInputs = with pkgs.python3Packages; [
               setuptools
               wheel
+              setuptools-scm
             ];
 
             doCheck = false;
