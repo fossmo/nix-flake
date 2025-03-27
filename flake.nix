@@ -11,7 +11,7 @@
 
   outputs = { self, nixpkgs, aider-src }:
     let
-      system = "x86_64-linux"; # Change if needed
+      system = "aarch64-darwin"; 
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       packages.${system}.default = pkgs.python3Packages.buildPythonApplication {
